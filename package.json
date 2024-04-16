@@ -5,6 +5,9 @@
   "repository": "https://github.com/IIC2513/Mi-primera-API.git",
   "author": "Antonio Ossa-Guerra <aaossa@uc.cl>",
   "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
   "dependencies": {
     "koa": "^2.15.3",
     "koa-logger": "^3.2.1",
