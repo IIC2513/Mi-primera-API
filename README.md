@@ -122,3 +122,33 @@ index 0357462..3fbeca8 100644
 4. Ejecutar servidor: `yarn dev`
 
 5. Probar servidor en [localhost:3000/movies](http://localhost:3000/movies) esperando recibir `"GET /movies"`
+
+
+## 3. Configurando Sequelize
+
+1. Agregar dependencies de Sequelize y Postgres: `yarn add sequelize pg pg-hstore`
+
+2. Agregar dependencia dev Sequelize CLI: `yarn add sequelize-cli --dev`
+
+3. Crear carpetas base para Sequelize con el comando: `yarn sequelize-cli init`
+
+4. Mover las carpetas creadas por el comando (`config/`, `migrations/`, `models/`, y `seeders/`) dentro de la carpeta `src/`
+
+5. Crear archivo `.sequelizerc`:
+```diff
+diff --git a/.sequelizerc b/.sequelizerc
+new file mode 100644
+index 0000000..0266f41
+--- /dev/null
++++ b/.sequelizerc
+@@ -0,0 +1,9 @@
++// .sequelizerc
++const path = require('path');
++
++module.exports = {
++  'config': path.resolve('src', 'config', 'config.json'),
++  'models-path': path.resolve('src', 'models'),
++  'seeders-path': path.resolve('src', 'seeders'),
++  'migrations-path': path.resolve('src', 'migrations')
++}
+```
