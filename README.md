@@ -54,3 +54,71 @@ index b847a24..9c8579b 100644
 6. Ejecutar servidor: `yarn dev`
 
 7. Probar servidor en [localhost:3000/](http://localhost:3000/) esperando recibir `"Hello world"`
+
+
+## 2. El primer router
+
+1. Crear el primer router en `src/routes/movies.js` con código base:
+```diff
+diff --git a/src/routes/movies.js b/src/routes/movies.js
+new file mode 100644
+index 0000000..9a0eabe
+--- /dev/null
++++ b/src/routes/movies.js
+@@ -0,0 +1,9 @@
++// src/routes/movies.js
++const Router = require('koa-router');
++const router = new Router();
++
++router.get('/', (ctx) => {
++  ctx.body = 'GET /movies';
++});
++
++module.exports = router;
+```
+
+2. Crear el router principal en `src/routes/index.js`, al que se van a conectar los routers de cada recurso:
+```diff
+diff --git a/src/routes/index.js b/src/routes/index.js
+new file mode 100644
+index 0000000..5737586
+--- /dev/null
++++ b/src/routes/index.js
+@@ -0,0 +1,8 @@
++// src/routes/index.js
++const Router = require('koa-router');
++const movies = require('./movies');
++
++const router = new Router();
++router.use('/movies', movies.routes());
++
++module.exports = router;
+```
+
+3. Modificar el servidor inicial en `src/index.js` para que utilice los endpoints alcanzables por medio del router principal:
+```diff
+diff --git a/src/index.js b/src/index.js
+index 0357462..3fbeca8 100644
+--- a/src/index.js
++++ b/src/index.js
+@@ -1,13 +1,12 @@
+ // src/index.js
+ const Koa = require('koa');
+ const Logger = require('koa-logger');
++const router = require('./routes');
+
+ const app = new Koa();
+
+ app.use(Logger());
+
+-app.use((ctx, next) => {
+-  ctx.body = 'Hola mundo';
+-});
++app.use(router.routes());
+
+ app.listen(3000);
+```
+
+4. Ejecutar servidor: `yarn dev`
+
+5. Probar servidor en [localhost:3000/movies](http://localhost:3000/movies) esperando recibir `"GET /movies"`
