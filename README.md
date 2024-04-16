@@ -342,3 +342,18 @@ index 9a0eabe..8b1a4c4 100644
   }
 ]
 ```
+
+
+---
+
+## Eliminado la base de datos
+
+1. Ingresamos al usuario de Postgres: `su - postgres`
+
+2. Eliminamos la base de datos: `dropdb demo_dev`
+
+3. Eliminamos al usuario: `dropuser aaossa`
+
+4. Salimos del usuario de Postgres: `exit`
+
+5. Detenemos el servicio de Postgres: `sudo service postgresql stop`
