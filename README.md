@@ -152,3 +152,93 @@ index 0000000..0266f41
 +  'migrations-path': path.resolve('src', 'migrations')
 +}
 ```
+
+
+## 4. Configurando Postgres
+
+1. Instalar, configurar e iniciar Postgres: `sudo service postgresql start`
+
+2. Iniciar sesión como el usuario de Postgres: `su - postgres`
+
+3. Crear base de datos: `createdb demo_dev` (cambiar "demo_dev" por tu base de datos)
+
+4. Agregar usuario: `createuser aaossa` (cambiar "aaossa" por tu usuario)
+
+5. Crear credenciales y dar permisos a usuario sobre la base de datos:
+```bash
+psq  # Iniciará la consola de postgres
+alter user aaossa with encrypted password 'pwd';
+grant all privileges on database demo_dev to aaossa;
+alter user aaossa createdb;
+exit  # Cerrará la consola de postgres
+```
+
+6. Cerrar la sesión del usuario de Postgres (abierta en paso 2): `exit`
+
+Los pasos 2 a 6 deberían resultar en una interacción similar a esta:
+```
+> su - postgres
+Password: 
+postgres@LAPTOP-C5PQL48R:~$ createdb demo_dev
+postgres@LAPTOP-C5PQL48R:~$ createuser aaossa
+postgres@LAPTOP-C5PQL48R:~$ psql
+psql (12.16 (Ubuntu 12.16-0ubuntu0.20.04.1))
+Type "help" for help.
+
+postgres=# alter user aaossa with encrypted password 'pwd';
+ALTER ROLE
+postgres=# grant all privileges on database demo_dev to aaossa;
+GRANT
+postgres=# alter user aaossa createdb;
+ALTER ROLE
+postgres=# exit
+postgres@LAPTOP-C5PQL48R:~$ exit
+logout
+
+```
+
+7. Actualizar credenciales y datos en archivo `src/config/config.json`:
+```diff
+diff --git a/src/config/config.json b/src/config/config.json
+index 0f858c6..c20b148 100644
+--- a/src/config/config.json
++++ b/src/config/config.json
+@@ -1,23 +1,23 @@
+ {
+   "development": {
+-    "username": "root",
+-    "password": null,
+-    "database": "database_development",
++    "username": "aaossa",
++    "password": "pwd",
++    "database": "demo_dev",
+     "host": "127.0.0.1",
+-    "dialect": "mysql"
++    "dialect": "postgres"
+   },
+   "test": {
+     "username": "root",
+     "password": null,
+     "database": "database_test",
+     "host": "127.0.0.1",
+-    "dialect": "mysql"
++    "dialect": "postgres"
+   },
+   "production": {
+     "username": "root",
+     "password": null,
+     "database": "database_production",
+     "host": "127.0.0.1",
+-    "dialect": "mysql"
++    "dialect": "postgres"
+   }
+ }
+```
+
+8. De ser necesario, se puede crear la base de datos desde Sequelize CLI: `yarn sequelize-cli db:create` (lanzará error si ya se creó)
+
+```
+ERROR: database "demo_dev" already exists
+
+error Command failed with exit code 1.
+```
