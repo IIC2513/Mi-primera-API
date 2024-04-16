@@ -242,3 +242,103 @@ ERROR: database "demo_dev" already exists
 
 error Command failed with exit code 1.
 ```
+
+
+## 5. Creando el primer recurso
+
+1. Creamos el modelo para la clase Movie (y su migración) usando Sequelize CLI: `yarn sequelize-cli model:generate --name Movie --attributes title:string,genre:string,description:string,rating:float`
+
+2. Ejecutamos la migración para crear la tabla correspondiente en la DB: `yarn sequelize-cli db:migrate`
+
+3. Creamos un archivo de *seeds* para la tabla de películas: `yarn sequelize-cli seed:generate --name first-movies`
+
+4. Agregamos nuestras propias *seeds* en el archivo creado:
+```diff
+diff --git a/src/seeders/20240416204953-first-movies.js b/src/seeders/20240416204953-first-movies.js
+new file mode 100644
+index 0000000..8371761
+--- /dev/null
++++ b/src/seeders/20240416204953-first-movies.js
+@@ -0,0 +1,26 @@
++// src/seeders/*-first-movies.js
++'use strict';
++
++module.exports = {
++  async up(queryInterface, Sequelize) {
++    await queryInterface.bulkInsert('Movies', [{
++      title: 'Arrival',
++      genre: 'Sci-fi/Thriller',
++      description: 'Louise Banks, a linguistics expert, along with her team, must interpret the language of aliens who have come to Earth in a mysterious spaceship.',
++      rating: 7.9,
++      createdAt: new Date(),
++      updatedAt: new Date()
++    }, {
++      title: 'Gone Girl',
++      genre: 'Thriller/Mystery',
++      description: 'Nick Dunne discovers that the entire media focus has shifted on him when his wife, Amy Dunne, mysteriously disappears on the day of their fifth wedding anniversary.',
++      rating: 8.1,
++      createdAt: new Date(),
++      updatedAt: new Date()
++    }], {});
++  },
++
++  async down(queryInterface, Sequelize) {
++    await queryInterface.bulkDelete('Movies', null, {});
++  }
++};
+```
+
+5. Agregamos las *seeds* a la base de datos: `yarn sequelize-cli db:seed:all`
+
+6. Actualizamos el controlador de películas para cargar todas las películas disponibles:
+```diff
+diff --git a/src/routes/movies.js b/src/routes/movies.js
+index 9a0eabe..8b1a4c4 100644
+--- a/src/routes/movies.js
++++ b/src/routes/movies.js
+@@ -1,9 +1,16 @@
+ // src/routes/movies.js
+ const Router = require('koa-router');
+ const router = new Router();
++const { Movie } = require('../models');
+
+-router.get('/', (ctx) => {
+-  ctx.body = 'GET /movies';
++router.get('/', async (ctx) => {
++  try {
++    const movies = await Movie.findAll();
++    ctx.body = movies;
++  } catch (error) {
++    console.log(error);
++    ctx.throw(404);
++  }
+ });
+
+ module.exports = router;
+```
+
+7. Ejecutar servidor: `yarn dev`
+
+8. Probar servidor en [localhost:3000/movies](http://localhost:3000/movies) esperando recibir:
+```json
+[
+  {
+    "id": 1,
+    "title": "Arrival",
+    "genre": "Sci-fi/Thriller",
+    "description": "Louise Banks, a linguistics expert, along with her team, must interpret the language of aliens who have come to Earth in a mysterious spaceship.",
+    "rating": 7.9,
+    "createdAt": "2024-04-16T21:06:05.273Z",
+    "updatedAt": "2024-04-16T21:06:05.273Z"
+  },
+  {
+    "id": 2,
+    "title": "Gone Girl",
+    "genre": "Thriller/Mystery",
+    "description": "Nick Dunne discovers that the entire media focus has shifted on him when his wife, Amy Dunne, mysteriously disappears on the day of their fifth wedding anniversary.",
+    "rating": 8.1,
+    "createdAt": "2024-04-16T21:06:05.273Z",
+    "updatedAt": "2024-04-16T21:06:05.273Z"
+  }
+]
+```
