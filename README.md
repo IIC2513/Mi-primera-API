@@ -166,7 +166,7 @@ index 0000000..0266f41
 
 5. Crear credenciales y dar permisos a usuario sobre la base de datos:
 ```bash
-psq  # Iniciará la consola de postgres
+psql  # Iniciará la consola de postgres
 alter user aaossa with encrypted password 'pwd';
 grant all privileges on database demo_dev to aaossa;
 alter user aaossa createdb;
